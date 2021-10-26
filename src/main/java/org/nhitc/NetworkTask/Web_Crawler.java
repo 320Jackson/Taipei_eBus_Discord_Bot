@@ -1,5 +1,7 @@
 package org.nhitc.NetworkTask;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.net.ssl.HttpsURLConnection;
 
 import java.io.BufferedReader;
@@ -9,6 +11,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Base64;
+import java.util.Date;
+import java.util.Locale;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
 public class Web_Crawler {
@@ -48,11 +55,11 @@ public class Web_Crawler {
         return str_Output;
     }
 
-    public String Download(String str_URL, boolean Auth) {
+    public String Download_PTX(String str_URL) {
         String str_Output = "";
         try {
             /*Network connection.*/
-            HttpsURLConnection WebConnection = getConnection(str_URL, "GET"); /*Get connection.*/
+            HttpsURLConnection WebConnection = getConnection_PTX(str_URL); /*Get connection.*/
             String AppID = "";
             String AppKey = "";
             String AuthorizationText = String.format("hmac username=\"%s\", algorithm=\"hmac-sha1\", headers=\"x-date\", signature=\"%s\"", AppID, getAuthorization_String(AppKey));
@@ -131,6 +138,15 @@ public class Web_Crawler {
         }
     }
 
+    private HttpsURLConnection getConnection_PTX(String str_URL) throws IOException {
+        HttpsURLConnection WebConnection = getConnection(str_URL, "GET");
+        String AppID = "";
+        String AppKey = "";
+        WebConnection.setRequestProperty("x-date: ", get_xDateString());
+        WebConnection.setRequestProperty("Authorization", String.format("hmac username=\"%s\", algorithm=\"hmac-sha1\", headers=\"x-date\", signature=\"%s\"", AppID, getAuthorization_String(AppKey)));
+        return WebConnection;
+    }
+
     private HttpsURLConnection getConnection(String str_URL, String Method) throws IOException {
         HttpsURLConnection WebConnection = (HttpsURLConnection)new URL(str_URL).openConnection();
         /*Set waiting time.*/
@@ -147,7 +163,30 @@ public class Web_Crawler {
         return WebConnection;
     }
 
-    private String getAuthorization_String(String AppKey) {
-        return "";
+    private String get_xDateString() {
+        Date TimeNow = new Date();
+        /*Set xdate format.*/
+        SimpleDateFormat xDateFormat = new SimpleDateFormat("EEE, dd MMM y HH:mm:ss zz", Locale.ENGLISH);
+        xDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return xDateFormat.format(TimeNow);
+    }
+
+    private String getAuthorization_String(String AppKey) {        
+        String str_AuthorizationCode = "";
+        try {
+            /*Set hmac1 crypto.*/
+            Mac hmac = Mac.getInstance("HmacSHA1");
+            SecretKeySpec Key = new SecretKeySpec(AppKey.getBytes(), hmac.getAlgorithm());
+            hmac.init(Key);
+            byte[] xDateCode = hmac.doFinal(String.format("x-date: %s", get_xDateString()).getBytes());
+
+            /*Set base64 encoder.*/
+            Base64.Encoder b64_Encoder = Base64.getEncoder();
+            str_AuthorizationCode = b64_Encoder.encodeToString(xDateCode).replace("\n", "");
+        }
+        catch (Exception Err){
+            Err.printStackTrace();
+        }
+        return str_AuthorizationCode;
     }
 }

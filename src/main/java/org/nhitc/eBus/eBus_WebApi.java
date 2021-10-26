@@ -16,15 +16,15 @@ public class eBus_WebApi {
         JSONArray StopArrivalTime, BusLocationList;
 
         /*Get estimate arrive time.*/
-        String Buffer = Downloader.Download(String.format("https://ptx.transportdata.tw/MOTC/v2/Bus/EstimatedTimeOfArrival/City/%s/%s?$orderby=StopID&$format=JSON", str_City, RouteName));
+        String Buffer = Downloader.Download_PTX(String.format("https://ptx.transportdata.tw/MOTC/v2/Bus/EstimatedTimeOfArrival/City/%s/%s?$orderby=StopID&$format=JSON", str_City, RouteName));
         if(Buffer.equals("[]null")) {
             str_City = "NewTaipei";
-            Buffer = Downloader.Download(String.format("https://ptx.transportdata.tw/MOTC/v2/Bus/EstimatedTimeOfArrival/City/%s/%s?$orderby=StopID&$format=JSON", str_City, RouteName));
+            Buffer = Downloader.Download_PTX(String.format("https://ptx.transportdata.tw/MOTC/v2/Bus/EstimatedTimeOfArrival/City/%s/%s?$orderby=StopID&$format=JSON", str_City, RouteName));
         }
         StopArrivalTime = new JSONArray(Buffer);
 
         /*Get bus location.*/
-        Buffer = Downloader.Download(String.format("https://ptx.transportdata.tw/MOTC/v2/Bus/RealTimeNearStop/City/%s/%s?$orderby=StopID&$format=JSON", str_City, RouteName));
+        Buffer = Downloader.Download_PTX(String.format("https://ptx.transportdata.tw/MOTC/v2/Bus/RealTimeNearStop/City/%s/%s?$orderby=StopID&$format=JSON", str_City, RouteName));
         BusLocationList = new JSONArray(Buffer);
 
         /*Get route station sequence.*/
