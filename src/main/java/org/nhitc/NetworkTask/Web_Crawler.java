@@ -60,10 +60,6 @@ public class Web_Crawler {
         try {
             /*Network connection.*/
             HttpsURLConnection WebConnection = getConnection_PTX(str_URL); /*Get connection.*/
-            String AppID = "";
-            String AppKey = "";
-            String AuthorizationText = String.format("hmac username=\"%s\", algorithm=\"hmac-sha1\", headers=\"x-date\", signature=\"%s\"", AppID, getAuthorization_String(AppKey));
-            WebConnection.setRequestProperty("Authorization", AuthorizationText);
             WebConnection.connect();
 
             /*Get data stream.*/
@@ -142,7 +138,7 @@ public class Web_Crawler {
         HttpsURLConnection WebConnection = getConnection(str_URL, "GET");
         String AppID = "";
         String AppKey = "";
-        WebConnection.setRequestProperty("x-date: ", get_xDateString());
+        WebConnection.setRequestProperty("x-date", get_xDateString());
         WebConnection.setRequestProperty("Authorization", String.format("hmac username=\"%s\", algorithm=\"hmac-sha1\", headers=\"x-date\", signature=\"%s\"", AppID, getAuthorization_String(AppKey)));
         return WebConnection;
     }
@@ -185,7 +181,8 @@ public class Web_Crawler {
             str_AuthorizationCode = b64_Encoder.encodeToString(xDateCode).replace("\n", "");
         }
         catch (Exception Err){
-            Err.printStackTrace();
+            System.out.println(Err.getMessage());
+            str_AuthorizationCode = Err.getMessage();
         }
         return str_AuthorizationCode;
     }

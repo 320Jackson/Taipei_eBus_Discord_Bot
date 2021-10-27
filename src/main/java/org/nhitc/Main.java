@@ -10,7 +10,7 @@ import org.nhitc.eBus.eBus_WebApi;
 public class Main {
     public static void main(String[] args) {
         /*Start bot thread.*/
-        Bot_Body Bot_Main = new Bot_Body(""); /*Bot thread.*/
+        Bot_Body Bot_Main = new Bot_Body("Your token."); /*Bot thread.*/
         Bot_Main.start();
 
         /*Bot console.*/

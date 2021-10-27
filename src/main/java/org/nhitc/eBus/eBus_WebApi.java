@@ -83,7 +83,7 @@ public class eBus_WebApi {
             if(Obj_BusNum != null) {
                 str_BusNum = String.format("[%s]", Obj_BusNum.getString("PlateNumb"));
             }
-            str_Output += String.format("%s\t%s\t%s\n", Analysis_StopStatus(EstimateTime), StopInfo.getJSONObject("StopName").getString("Zh_tw"), str_BusNum);
+            str_Output += String.format("%s\t%s\t%s\r\n", Analysis_StopStatus(EstimateTime), StopInfo.getJSONObject("StopName").getString("Zh_tw"), str_BusNum);
         }
 
         return str_Output;
